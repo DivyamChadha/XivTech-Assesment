@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weather App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $('#weatherForm').submit(function (event) {
+          event.preventDefault();
+          const cities = $('#cityInput').val().split(',');
+
+          $.ajax({
+            url: 'http://localhost:3000/getWeather',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({ cities: cities }),
+            success: function (response) {
+              $('#weatherResults').empty();
+              Object.keys(response.weather).forEach(function (city) {
+                const weather = response.weather[city];
+                $('#weatherResults').append(`<li>${city}: ${weather}</li>`);
+              });
+            },
+            error: function (error) {
+              console.error(error);
+              $('#weatherResults').empty().append('<li>Error fetching weather data</li>');
+            },
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Weather App</h1>
+    <form id="weatherForm">
+      <label for="cityInput">Enter city names (comma-separated):</label>
+      <input type="text" id="cityInput" required>
+      <button type="submit">Get Weather</button>
+    </form>
+    <ul id="weatherResults"></ul>
+  </body>
+</html>
